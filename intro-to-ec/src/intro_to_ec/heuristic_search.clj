@@ -2,6 +2,17 @@
   (:require [clojure.set :as cset]
             [clojure.data.priority-map]))
 
+(defn abs [n]
+  (max n (* -1 n)))
+
+(defn distance-heuristic
+  [current-node goal-node]
+  (+
+   (abs
+    (- (first current-node) (first goal-node)))
+   (abs
+    (- (last current-node) (last goal-node)))))
+
 (defn remove-previous-node
   [new-node frontier visited]
   (remove (cset/union (set frontier) (set visited)) new-node))
