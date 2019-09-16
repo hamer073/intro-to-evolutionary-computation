@@ -2,9 +2,9 @@
   (:require [clojure.set :as cset]
             [clojure.data.priority-map]))
 
-(defn remove-previous-states
-  [new-states frontier visited]
-  (remove (cset/union (set frontier) (set visited)) new-states))
+(defn remove-previous-node
+  [new-node frontier visited]
+  (remove (cset/union (set frontier) (set visited)) new-node))
 
 (defn generate-path
   [came-from node]
@@ -26,7 +26,7 @@
         (goal? current-node) (generate-path came-from current-node)
         (= num-calls max-calls) :max-calls-reached
         :else
-        (let [kids (remove-previous-states
+        (let [kids (remove-previous-node
                     (make-children current-node) frontier (keys came-from))]
           (recur
            (add-children
