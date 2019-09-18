@@ -65,3 +65,14 @@
   [min-range max-range wall-set]
   {:goal? origin-goal?
    :make-children (partial grid-children min-range max-range wall-set)})
+
+(defn abs [n]
+  (max n (* -1 n)))
+
+(defn distance-heuristic
+  [current-node goal-node]
+   (+
+    (abs
+     (- (first current-node) (first goal-node)))
+    (abs
+     (- (last current-node) (last goal-node)))))
