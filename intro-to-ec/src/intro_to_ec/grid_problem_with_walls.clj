@@ -21,24 +21,24 @@
   [position move]
   (vec (map + position move)))
 
-(defn legal-coordinate
+(defn legal-coordinate?
   "Limit our search to the space where the given coordinate
    is in the range [0, max-range)."
   [min-range max-range x]
   (and (>= x min-range) (< x max-range)))
 
-(defn legal-state
+(defn legal-state?
   "Return true if both coordinates are legal and this position isn't
    in the 'wall' set."
   [min-range max-range wall-set position]
-  (and (every? (partial legal-coordinate min-range max-range) position)
+  (and (every? (partial legal-coordinate? min-range max-range) position)
        (not (contains? wall-set position))))
 
 (defn grid-children
   "Generate a list of all the possible child states
    reachable from the given initial position."
   [min-range max-range wall-set position]
-  (filter (partial legal-state min-range max-range wall-set)
+  (filter (partial legal-state? min-range max-range wall-set)
           (map (partial apply-move position) all-moves)))
 
 (def min-range -10)
