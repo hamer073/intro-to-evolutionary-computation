@@ -12,11 +12,21 @@
     [node]
     (conj (generate-path came-from (get came-from node)) node)))
 
+(defn add-children
+  [children frontier heuristic]
+  (let [frontier (pop frontier)]
+    (reduce (fn [child] assoc frontier child (heuristic child))
+         children)))
+
+(defn add-to-came-from
+  [children parent came-from]
+  (reduce (fn [cf child] (assoc cf child parent))
+          came-from children))
+
 (defn search
-  [{:keys [add-children]}
-   {:keys [goal? make-children]}
+  [{:keys [goal? make-children heuristic]}
    start-node max-calls]
-  (loop [frontier (priority-map start-node 0)
+  (loop [frontier (pm/priority-map start-node 0)
          came-from {start-node :start-node}
          num-calls 0]
     (println num-calls ": " frontier)
@@ -29,8 +39,6 @@
         (let [children (remove-previous-node
                     (make-children current-node) frontier (keys came-from))]
           (recur
-           (add-children
-            children  
-            (pop frontier))
-           (reduce (fn [cf child] (assoc cf child current-node)) came-from children)
-           (inc num-calls)))))))
+            (add-children children frontier heuristic)
+            (add-to-came-from children current-node came-from)
+            (inc num-calls)))))))
