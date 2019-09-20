@@ -4,7 +4,7 @@
 
 (defn remove-previous-node
   [new-nodes frontier visited]
-  (remove (cset/union (set frontier) (set visited)) new-nodes))
+  (remove (cset/union (set (keys frontier)) (set visited)) new-nodes))
 
 (defn generate-path
   [came-from node]
@@ -15,8 +15,8 @@
 (defn add-children
   [children frontier heuristic]
   (let [frontier (pop frontier)]
-    (reduce (fn [child] assoc frontier child (heuristic child))
-         children)))
+    (reduce (fn [frontier child] (assoc frontier child (heuristic child)))
+         frontier children)))
 
 (defn add-to-came-from
   [children parent came-from]
@@ -26,12 +26,12 @@
 (defn search
   [{:keys [goal? make-children heuristic]}
    start-node max-calls]
-  (loop [frontier (pm/priority-map start-node 0)
+  (loop [frontier (pm/priority-map start-node (heuristic start-node))
          came-from {start-node :start-node}
          num-calls 0]
     (println num-calls ": " frontier)
     (println came-from)
-    (let [current-node (first frontier)]
+    (let [current-node (key (first frontier))]
       (cond
         (goal? current-node) (generate-path came-from current-node)
         (= num-calls max-calls) :max-calls-reached
