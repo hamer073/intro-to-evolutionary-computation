@@ -57,6 +57,17 @@
       [x -1])
     [[2 0]])))
 
+(defn abs [n]
+  (max n (* -1 n)))
+
+(defn distance-heuristic
+  [current-node]
+   (+
+    (abs
+     (- (first current-node) 0))
+    (abs
+     (- (last current-node) 0))))
+
 (defn make-grid-problem
   "Create an instance of a simple problem of moving on a grid towards
    the origin. The ranges specify the bounds on the grid world, and the
@@ -64,15 +75,5 @@
    or crossed."
   [min-range max-range wall-set]
   {:goal? origin-goal?
-   :make-children (partial grid-children min-range max-range wall-set)})
-
-(defn abs [n]
-  (max n (* -1 n)))
-
-(defn distance-heuristic
-  [current-node goal-node]
-   (+
-    (abs
-     (- (first current-node) (first goal-node)))
-    (abs
-     (- (last current-node) (last goal-node)))))
+   :make-children (partial grid-children min-range max-range wall-set)
+   :heuristic distance-heuristic})
