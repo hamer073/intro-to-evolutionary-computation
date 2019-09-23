@@ -68,6 +68,11 @@
     (abs
      (- (last current-node) 0))))
 
+ (defn generate-cost
+   [new-nodes current-node cost-so-far]
+   (reduce #(assoc %1 (+ (cost-so-far current-node) 1)) {}
+           new-nodes))
+
 (defn make-grid-problem
   "Create an instance of a simple problem of moving on a grid towards
    the origin. The ranges specify the bounds on the grid world, and the
@@ -76,4 +81,5 @@
   [min-range max-range wall-set]
   {:goal? origin-goal?
    :make-children (partial grid-children min-range max-range wall-set)
+   :generate-cost generate-cost
    :heuristic distance-heuristic})
