@@ -42,7 +42,7 @@
           (= num-calls max-calls) :max-calls-reached
           :else
           (let [children (remove-previous-node
-                      (generate-cost (make-children current-node)) frontier (keys came-from))]
+                      (generate-cost (make-children current-node)) frontier (keys came-from) cost-so-far)]
             (recur
               (add-children (keys children) frontier heuristic)
               (add-to-came-from (keys children) current-node came-from)
