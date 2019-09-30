@@ -4,9 +4,13 @@
 
 (defn remove-previous-node
   [new-nodes frontier visited cost-so-far]
-
-
-  (remove (cset/union (set (keys frontier)) (set visited)) new-nodes))
+  (into {} (filter (fn [node]
+            ; (println "Filtering node: " node)
+            (or (not
+                     (contains? cost-so-far (first node)))
+                (<
+                   (second node) (cost-so-far (first node)))
+                )) new-nodes)))
 
 (defn generate-path
   [came-from node]
@@ -17,7 +21,12 @@
 (defn add-children
   [children frontier heuristic]
   (let [frontier (pop frontier)]
-    (reduce (fn [froniter child] (assoc frontier child (heuristic child)))
+    (reduce (fn [frontier child]
+              (println child)
+              (println (heuristic (key child)))
+              (println (val child))
+              (println)
+              (assoc frontier (key child) (+ (heuristic (key child)) (val child))))
             frontier children)))
 
 (defn add-to-came-from
@@ -33,7 +42,7 @@
          cost-so-far {start-node 0}
          num-calls 0]
     (println num-calls ": " frontier)
-    (println came-from)
+    ; (println came-from)
     (if (nil? (first frontier))
       :no-solutions-found
       (let [current-node (key (first frontier))]
@@ -42,9 +51,10 @@
           (= num-calls max-calls) :max-calls-reached
           :else
           (let [children (remove-previous-node
-                      (generate-cost (make-children current-node)) frontier (keys came-from) cost-so-far)]
+                      (generate-cost (make-children current-node) current-node cost-so-far) frontier (keys came-from) cost-so-far)]
+            ; (println "Generated children: " children)
             (recur
-              (add-children (keys children) frontier heuristic)
+              (add-children children frontier heuristic)
               (add-to-came-from (keys children) current-node came-from)
-              (conj children cost-so-far)
+              (merge cost-so-far children)
               (inc num-calls))))))))
