@@ -70,7 +70,10 @@
 
  (defn generate-cost
    [new-nodes current-node cost-so-far]
-   (reduce #(assoc %1 (+ (cost-so-far current-node) 1)) {}
+   (reduce (fn [costs node]
+             (assoc costs
+                    node
+                    (+ (cost-so-far current-node) 1))) {}
            new-nodes))
 
 (defn make-grid-problem
