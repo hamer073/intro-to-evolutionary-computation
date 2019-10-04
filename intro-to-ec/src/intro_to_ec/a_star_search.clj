@@ -4,8 +4,10 @@
 
 (defn remove-previous-node
   [new-nodes frontier visited cost-so-far]
-  (into {} (filter (fn [node]
-            ; (println "Filtering node: " node)
+   (reduce (fn [map keyval]
+            (assoc map (first keyval) (second keyval)))
+          (pm/priority-map)
+           (filter (fn [node]
             (or (not
                      (contains? cost-so-far (first node)))
                 (<
@@ -20,12 +22,10 @@
 
 (defn add-children
   [children frontier heuristic]
-  (let [frontier (pop frontier)]
+  (let [frontier (pm/priority-map
+                       (remove (fn [frontier] (contains? (set children) (first frontier)))
+                               (pop frontier)))]
     (reduce (fn [frontier child]
-              (println child)
-              (println (heuristic (key child)))
-              (println (val child))
-              (println)
               (assoc frontier (key child) (+ (heuristic (key child)) (val child))))
             frontier children)))
 
@@ -52,7 +52,7 @@
           :else
           (let [children (remove-previous-node
                       (generate-cost (make-children current-node) current-node cost-so-far) frontier (keys came-from) cost-so-far)]
-            ; (println "Generated children: " children)
+            (println "Generated children: " children)
             (recur
               (add-children children frontier heuristic)
               (add-to-came-from (keys children) current-node came-from)
