@@ -22,7 +22,7 @@
 
 (defn add-children
   [children frontier heuristic]
-  (let [frontier (reduce #(assoc %1 (first %2) (second %2))
+  (let [frontier (reduce #(conj %1 %2)
                          (pm/priority-map)
                          (remove (fn [frontier] (contains? (set children) (first frontier)))
                                  (pop frontier)))]
