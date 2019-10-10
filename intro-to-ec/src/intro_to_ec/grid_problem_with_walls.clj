@@ -60,13 +60,20 @@
 (defn abs [n]
   (max n (* -1 n)))
 
-(defn distance-heuristic
+(defn manhattan-heuristic
   [current-node]
    (+
     (abs
      (- (first current-node) 0))
     (abs
      (- (last current-node) 0))))
+
+(defn euclidean-heuristic
+  [current-node]
+  (int (Math/sqrt
+   (+
+    (Math/pow (first current-node) 2)
+    (Math/pow (last current-node) 2)))))
 
  (defn generate-cost
    [new-nodes current-node cost-so-far]
@@ -81,8 +88,8 @@
    the origin. The ranges specify the bounds on the grid world, and the
    `wall-set` is a (possibly empty) set of positions that can't be entered
    or crossed."
-  [min-range max-range wall-set]
+  [min-range max-range wall-set heuristic]
   {:goal? origin-goal?
    :make-children (partial grid-children min-range max-range wall-set)
    :generate-cost generate-cost
-   :heuristic distance-heuristic})
+   :heuristic heuristic})
