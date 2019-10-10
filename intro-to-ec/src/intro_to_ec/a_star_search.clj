@@ -22,9 +22,10 @@
 
 (defn add-children
   [children frontier heuristic]
-  (let [frontier (pm/priority-map
-                       (remove (fn [frontier] (contains? (set children) (first frontier)))
-                               (pop frontier)))]
+  (let [frontier (reduce #(assoc %1 (first %2) (second %2))
+                         (pm/priority-map)
+                         (remove (fn [frontier] (contains? (set children) (first frontier)))
+                                 (pop frontier)))]
     (reduce (fn [frontier child]
               (assoc frontier (key child) (+ (heuristic (key child)) (val child))))
             frontier children)))
@@ -52,7 +53,6 @@
           :else
           (let [children (remove-previous-node
                       (generate-cost (make-children current-node) current-node cost-so-far) frontier (keys came-from) cost-so-far)]
-            (println "Generated children: " children)
             (recur
               (add-children children frontier heuristic)
               (add-to-came-from (keys children) current-node came-from)
